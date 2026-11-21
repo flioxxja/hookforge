@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HookForge — AI Hook & Idea Studio for Creators</title>
 <meta name="description" content="Generate scroll-stopping hooks, 30-second scripts, captions and hashtags for TikTok, Reels and Shorts. Free, no sign-up.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚒️</text></svg>">
+<meta property="og:title" content="HookForge — AI Hook & Idea Studio for Creators">
+<meta property="og:description" content="Forge scroll-stopping hooks with virality scores, 30-second scripts, captions and hashtags. Free, no sign-up.">
+<meta property="og:type" content="website">
 <style>
   :root{
     --bg:#070b16; --panel:#0e1526; --panel2:#121c33; --line:rgba(148,178,255,.16);
@@ -113,6 +117,7 @@
       <label>Your topic (optional)</label>
       <input type="text" id="topic" placeholder="e.g. free AI tools, morning routine, budget meals…">
       <button class="btn" id="go">⚒️ Forge 5 hooks</button>
+      <button class="btn ghost" id="surprise" style="width:100%;margin-top:10px">🎲 Surprise me — random combo</button>
       <p class="empty" style="margin-top:14px">Scoring model: curiosity words, numbers, questions, length sweet-spot and emotional triggers — the patterns behind top-performing short-form hooks.</p>
     </section>
 
@@ -157,7 +162,9 @@ const TEMPLATES={
     "You're doing {w} wrong. Here's the fix.",
     "{n} {w} mistakes that are killing your results.",
     "Unpopular opinion: most {w} advice is garbage. Try this.",
-    "I tried {w} for {d} days. The results shocked me."
+    "I tried {w} for {d} days. The results shocked me.",
+    "Delete this {w} habit today. Thank me later.",
+    "Your {w} routine is sabotaging you. Fix #2 first."
   ],
   curious:[
     "What happens if you try {w} for {d} days?",
@@ -165,7 +172,9 @@ const TEMPLATES={
     "Why does nobody explain {w} like this?",
     "This {w} hack feels illegal to know.",
     "{n} signs your {w} strategy is broken.",
-    "Wait until you see #3 about {w}…"
+    "Wait until you see #3 about {w}…",
+    "I bet you didn't know this about {w}.",
+    "The {w} rule nobody follows (but should)."
   ],
   story:[
     "I was broke and stuck — until {w} changed my life.",
@@ -173,7 +182,9 @@ const TEMPLATES={
     "My biggest {w} failure taught me this lesson.",
     "POV: you finally understand {w} after months of trying.",
     "I asked 100 people about {w}. One answer stood out.",
-    "This is what {d} days of {w} really looks like."
+    "This is what {d} days of {w} really looks like.",
+    "Nobody believed in my {w} journey. Watch this.",
+    "From zero to consistent: my {w} story."
   ],
   teach:[
     "{w} explained in 30 seconds.",
@@ -181,7 +192,9 @@ const TEMPLATES={
     "How to master {w} (beginner-friendly).",
     "The only {w} checklist you'll ever need.",
     "{w} for beginners: start here.",
-    "Save this {w} guide before it disappears."
+    "Save this {w} guide before it disappears.",
+    "Do this {w} drill every morning for {d} days.",
+    "The 80/20 of {w}, explained simply."
   ]
 };
 const GOAL_CTA={
@@ -256,6 +269,14 @@ function forge(){
   renderStats();
 }
 $("go").onclick=forge;
+$("surprise").onclick=()=>{
+  const r=a=>a[Math.floor(Math.random()*a.length)];
+  $("niche").value=r(["ai","money","fitness","food","study","beauty"]);
+  $("tone").value=r(["bold","curious","story","teach"]);
+  $("goal").value=r(["views","followers","sales","saves"]);
+  $("platform").value=r(["TikTok","Instagram Reels","YouTube Shorts"]);
+  $("topic").value=""; forge(); toast("Random combo forged!");
+};
 $("copyAll").onclick=()=>{
   if(!lastHooks.length)return toast("Forge hooks first");
   copyText("HOOKS:\n"+lastHooks.map(h=>`• ${h.text} (${h.score}/100)`).join("\n")+"\n\nSCRIPT:\n"+$("script").innerText+"\n\nCAPTION:\n"+$("caption").innerText);
