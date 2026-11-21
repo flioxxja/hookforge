@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HookForge — AI Hook & Idea Studio for Creators</title>
+<meta name="description" content="Generate scroll-stopping hooks, 30-second scripts, captions and hashtags for TikTok, Reels and Shorts. Free, no sign-up.">
+<style>
+  :root{
+    --bg:#070b16; --panel:#0e1526; --panel2:#121c33; --line:rgba(148,178,255,.16);
+    --txt:#eef2ff; --mut:#93a4c9; --acc:#5eead4; --acc2:#a78bfa; --hot:#fb7185; --gold:#fbbf24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1000px 600px at 80% -10%,rgba(167,139,250,.18),transparent 60%),radial-gradient(900px 500px at 10% 0%,rgba(94,234,212,.12),transparent 55%),var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+  #snow{position:fixed;inset:0;pointer-events:none;opacity:.7;z-index:0}
+  .wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:28px 20px 70px}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .logo{font-size:30px;font-weight:900;letter-spacing:-.5px}
+  .logo span{color:var(--acc)}
+  .badge{font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--acc);border:1px solid var(--line);padding:6px 12px;border-radius:999px;background:rgba(94,234,212,.06)}
+  h1{font-size:clamp(34px,6vw,58px);line-height:1.04;font-weight:900;letter-spacing:-1.5px;margin:26px 0 10px}
+  h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--mut);font-size:17px;max-width:640px;line-height:1.55}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:20px;padding:22px}
+  .card h2{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-bottom:14px}
+  label{display:block;font-size:13px;color:var(--mut);margin:12px 0 6px;font-weight:600}
+  select,input[type=text]{width:100%;background:#0a1120;color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;outline:none}
+  select:focus,input:focus{border-color:var(--acc)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--acc),#38bdf8);color:#04121a;font-weight:800;font-size:16px;border:0;border-radius:14px;padding:15px 22px;cursor:pointer;width:100%;justify-content:center;margin-top:18px;transition:transform .12s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:scale(.99)}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);font-size:14px;padding:10px 14px;width:auto;margin-top:0}
+  .hook{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;background:rgba(255,255,255,.02)}
+  .hook p{font-size:16.5px;font-weight:650;line-height:1.4}
+  .meta{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .score{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px}
+  .s-hi{background:rgba(94,234,212,.15);color:var(--acc)} .s-mid{background:rgba(251,191,36,.15);color:var(--gold)} .s-lo{background:rgba(251,113,133,.15);color:var(--hot)}
+  .why{font-size:12px;color:var(--mut)}
+  .copy{margin-left:auto;font-size:12px;font-weight:700;background:transparent;color:var(--mut);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+  .copy:hover{color:var(--txt);border-color:var(--acc)}
+  .fav{background:transparent;border:0;cursor:pointer;font-size:16px;color:var(--mut)}
+  .fav.on{color:var(--gold)}
+  .script p{margin:8px 0;line-height:1.55;color:#dbe4ff}
+  .script b{color:var(--acc)}
+  .tags{color:var(--acc2);font-size:14px;line-height:1.7;word-break:break-word}
+  .empty{color:var(--mut);font-size:15px;line-height:1.6}
+  .stat{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px}
+  .stat div{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+  .stat b{display:block;font-size:20px}
+  .stat span{font-size:11px;color:var(--mut);letter-spacing:1px;text-transform:uppercase}
+  footer{margin-top:34px;color:var(--mut);font-size:13px;text-align:center;line-height:1.7}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:#0f1c33;border:1px solid var(--acc);color:var(--txt);padding:12px 20px;border-radius:12px;font-weight:700;transition:transform .25s;z-index:9}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<div class="wrap">
+  <header>
+    <div class="logo">Hook<span>Forge</span></div>
+    <span class="badge">CREATORS AI WINTER CHALLENGE</span>
+    <span class="badge">FREE · NO SIGN-UP</span>
+  </header>
+
+  <h1>Hooks that stop<br>the <em>scroll.</em></h1>
+  <p class="sub">Pick your niche, platform and goal. HookForge forges 5 scored hooks, a 30-second script, a caption and hashtags — ready to film in under a minute.</p>
+
+  <div class="stat">
+    <div><b id="stHooks">0</b><span>hooks forged</span></div>
+    <div><b id="stBest">—</b><span>best score</span></div>
+    <div><b id="stFavs">0</b><span>saved favorites</span></div>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Forge your hooks</h2>
+      <label>Niche</label>
+      <select id="niche">
+        <option value="ai">AI & Tech</option>
+        <option value="money">Money & Business</option>
+        <option value="fitness">Fitness</option>
+        <option value="food">Food</option>
+        <option value="study">Study & Productivity</option>
+        <option value="beauty">Beauty & Style</option>
+      </select>
+      <div class="row2">
+        <div>
+          <label>Platform</label>
+          <select id="platform">
+            <option>TikTok</option><option>Instagram Reels</option><option>YouTube Shorts</option>
+          </select>
+        </div>
+        <div>
+          <label>Goal</label>
+          <select id="goal">
+            <option value="views">More views</option>
+            <option value="followers">More followers</option>
+            <option value="sales">Sell a product</option>
+            <option value="saves">Saves & shares</option>
+          </select>
+        </div>
+      </div>
+      <label>Tone</label>
+      <select id="tone">
+        <option value="bold">Bold / controversial</option>
+        <option value="curious">Curiosity gap</option>
+        <option value="story">Story / personal</option>
+        <option value="teach">Teach me fast</option>
+      </select>
+      <label>Your topic (optional)</label>
+      <input type="text" id="topic" placeholder="e.g. free AI tools, morning routine, budget meals…">
+      <button class="btn" id="go">⚒️ Forge 5 hooks</button>
+      <p class="empty" style="margin-top:14px">Scoring model: curiosity words, numbers, questions, length sweet-spot and emotional triggers — the patterns behind top-performing short-form hooks.</p>
+    </section>
+
+    <section class="card">
+      <h2>Your hooks</h2>
+      <div id="hooks"><p class="empty">Your 5 hooks will appear here. Hit <b>Forge</b> to start.</p></div>
+    </section>
+
+    <section class="card script">
+      <h2>30-second script</h2>
+      <div id="script"><p class="empty">Generate hooks first — your script (hook → value → CTA) builds itself from the best one.</p></div>
+    </section>
+
+    <section class="card">
+      <h2>Caption + hashtags</h2>
+      <div id="caption"><p class="empty">A ready-to-paste caption with hashtags lands here.</p></div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn ghost" id="copyAll">Copy everything</button>
+        <button class="btn ghost" id="showFavs">★ Favorites</button>
+      </div>
+    </section>
+  </div>
+
+  <footer>Built for the Creators AI Winter Challenge · Runs 100% in your browser · AI-assisted development (Muse), disclosed per hackathon rules</footer>
+</div>
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const NICHE={
+  ai:{label:"AI & Tech",words:["AI tools","ChatGPT","automation","prompts","apps","agents","workflows"],tags:["#AI","#ArtificialIntelligence","#TechTok","#AItools","#Productivity","#FutureTech"]},
+  money:{label:"Money & Business",words:["side hustles","passive income","investing","saving money","online business","freelancing"],tags:["#MoneyTok","#SideHustle","#Investing","#FinancialFreedom","#Entrepreneur","#MakeMoneyOnline"]},
+  fitness:{label:"Fitness",words:["home workouts","protein","fat loss","muscle","morning routine","stretching"],tags:["#FitnessTok","#Workout","#GymTok","#HealthyHabits","#FitLife","#Training"]},
+  food:{label:"Food",words:["recipes","meal prep","budget meals","kitchen hacks","desserts","snacks"],tags:["#FoodTok","#Recipe","#Cooking","#MealPrep","#Foodie","#KitchenHacks"]},
+  study:{label:"Study & Productivity",words:["study techniques","focus","note-taking","exams","time management","memory"],tags:["#StudyTok","#Productivity","#StudyTips","#StudentLife","#Focus","#LearnOnTikTok"]},
+  beauty:{label:"Beauty & Style",words:["skincare","makeup","outfits","hair care","glow up","routines"],tags:["#BeautyTok","#Skincare","#Makeup","#GlowUp","#GRWM","#StyleTips"]}
+};
+const TEMPLATES={
+  bold:[
+    "Stop wasting time on {w}. Do THIS instead.",
+    "Nobody talks about this {w} trick — and it changes everything.",
+    "You're doing {w} wrong. Here's the fix.",
+    "{n} {w} mistakes that are killing your results.",
+    "Unpopular opinion: most {w} advice is garbage. Try this.",
+    "I tried {w} for {d} days. The results shocked me."
+  ],
+  curious:[
+    "What happens if you try {w} for {d} days?",
+    "The {w} secret experts don't want you to know…",
+    "Why does nobody explain {w} like this?",
+    "This {w} hack feels illegal to know.",
+    "{n} signs your {w} strategy is broken.",
+    "Wait until you see #3 about {w}…"
+  ],
+  story:[
+    "I was broke and stuck — until {w} changed my life.",
+    "Day 1 of {w}: I almost quit. Day {d}: everything changed.",
+    "My biggest {w} failure taught me this lesson.",
+    "POV: you finally understand {w} after months of trying.",
+    "I asked 100 people about {w}. One answer stood out.",
+    "This is what {d} days of {w} really looks like."
+  ],
+  teach:[
+    "{w} explained in 30 seconds.",
+    "{n} {w} tips you can use today.",
+    "How to master {w} (beginner-friendly).",
+    "The only {w} checklist you'll ever need.",
+    "{w} for beginners: start here.",
+    "Save this {w} guide before it disappears."
+  ]
+};
+const GOAL_CTA={
+  views:"Watch till the end — the last tip is the best one.",
+  followers:"Follow for part 2 tomorrow.",
+  sales:"Link in bio — it sold out last time.",
+  saves:"Save this so you don't lose it."
+};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>[...a].sort(()=>Math.random()-.5);
+
+function scoreHook(h){
+  let s=45; const why=[];
+  if(/\d/.test(h)){s+=14;why.push("has a number")}
+  if(h.includes("?")){s+=10;why.push("opens a question")}
+  if(/stop|wrong|mistake|secret|illegal|nobody|shocked|garbage/i.test(h)){s+=14;why.push("pattern interrupt")}
+  if(/you|your/i.test(h)){s+=8;why.push("speaks to viewer")}
+  const len=h.length;
+  if(len>=35&&len<=85){s+=12;why.push("ideal length")} else if(len>110){s-=8;why.push("a bit long")}
+  if(/this|here|wait|until/i.test(h)){s+=7;why.push("curiosity gap")}
+  return {score:Math.max(18,Math.min(98,s+Math.floor(Math.random()*7))),why:why.slice(0,3).join(" · ")||"clean and direct"};
+}
+
+let lastHooks=[], favs=JSON.parse(localStorage.getItem("hf-favs")||"[]");
+function renderStats(){
+  $("stHooks").textContent=localStorage.getItem("hf-count")||0;
+  $("stFavs").textContent=favs.length;
+  const best=lastHooks.length?Math.max(...lastHooks.map(h=>h.score)):null;
+  $("stBest").textContent=best?best+"/100":"—";
+}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1600)}
+function copyText(txt){navigator.clipboard.writeText(txt).then(()=>toast("Copied!"))}
+
+function forge(){
+  const niche=NICHE[$("niche").value], tone=$("tone").value, goal=$("goal").value, plat=$("platform").value;
+  const topic=$("topic").value.trim();
+  const word=topic||pick(niche.words);
+  const tpl=shuffle(TEMPLATES[tone]).slice(0,5);
+  lastHooks=tpl.map(t=>{
+    const h=t.replace("{w}",word).replace("{n}",pick([3,5,7])).replace("{d}",pick([7,14,30]));
+    const sc=scoreHook(h);
+    return {text:h,...sc};
+  }).sort((a,b)=>b.score-a.score);
+  localStorage.setItem("hf-count",(+localStorage.getItem("hf-count")||0)+5);
+
+  $("hooks").innerHTML=lastHooks.map((h,i)=>{
+    const cls=h.score>=80?"s-hi":h.score>=60?"s-mid":"s-lo";
+    const on=favs.includes(h.text)?"on":"";
+    return `<div class="hook"><p>${h.text}</p><div class="meta">
+      <span class="score ${cls}">${h.score}/100</span><span class="why">${h.why}</span>
+      <button class="fav ${on}" data-fav="${i}" title="Save favorite">★</button>
+      <button class="copy" data-copy="${i}">Copy</button></div></div>`;
+  }).join("");
+
+  const best=lastHooks[0];
+  $("script").innerHTML=`
+    <p><b>0–3s · Hook:</b> “${best.text}”</p>
+    <p><b>3–22s · Value:</b> Show the ${word} payoff fast — one clear demo, one surprising result, zero fluff. On-screen text mirrors your words.</p>
+    <p><b>22–30s · CTA:</b> ${GOAL_CTA[goal]}</p>
+    <p><b>Best time to post:</b> ${plat==="TikTok"?"6–9 pm":plat==="Instagram Reels"?"11 am–1 pm":"12–3 pm"} (your audience's peak scroll window).</p>`;
+
+  const tags=shuffle(niche.tags).slice(0,5).join(" ");
+  $("caption").innerHTML=`<p style="line-height:1.55;margin-bottom:10px">${best.text} 👀 Full breakdown in the video — ${GOAL_CTA[goal]}</p><p class="tags">${tags} #${plat.replace(/\s/g,"")} #CreatorEconomy</p>`;
+
+  document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copyText(lastHooks[+b.dataset.copy].text));
+  document.querySelectorAll("[data-fav]").forEach(b=>b.onclick=()=>{
+    const t=lastHooks[+b.dataset.fav].text;
+    favs=favs.includes(t)?favs.filter(f=>f!==t):[...favs,t];
+    localStorage.setItem("hf-favs",JSON.stringify(favs));
+    b.classList.toggle("on"); renderStats();
+  });
+  renderStats();
+}
+$("go").onclick=forge;
+$("copyAll").onclick=()=>{
+  if(!lastHooks.length)return toast("Forge hooks first");
+  copyText("HOOKS:\n"+lastHooks.map(h=>`• ${h.text} (${h.score}/100)`).join("\n")+"\n\nSCRIPT:\n"+$("script").innerText+"\n\nCAPTION:\n"+$("caption").innerText);
+};
+$("showFavs").onclick=()=>{
+  $("hooks").innerHTML=favs.length?favs.map(f=>`<div class="hook"><p>${f}</p></div>`).join(""):`<p class="empty">No favorites yet — tap ★ on any hook to save it here.</p>`;
+};
+renderStats();
+
+/* winter snow */
+const c=$("snow"),x=c.getContext("2d");let W,H,flakes=[];
+function resize(){W=c.width=innerWidth;H=c.height=innerHeight;flakes=Array.from({length:110},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2.2+.6,s:Math.random()*.9+.35,dr:Math.random()*1-.5}))}
+resize();addEventListener("resize",resize);
+(function loop(){x.clearRect(0,0,W,H);x.fillStyle="rgba(230,240,255,.85)";for(const f of flakes){x.beginPath();x.arc(f.x,f.y,f.r,0,7);x.fill();f.y+=f.s;f.x+=f.dr*.4;if(f.y>H){f.y=-4;f.x=Math.random()*W}}requestAnimationFrame(loop)})();
+</script>
+</body>
+</html>
