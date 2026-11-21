@@ -37,7 +37,16 @@
   .btn:hover{transform:translateY(-1px)}
   .btn:active{transform:scale(.99)}
   .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);font-size:14px;padding:10px 14px;width:auto;margin-top:0}
-  .hook{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;background:rgba(255,255,255,.02)}
+  .hook{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;background:rgba(255,255,255,.02);animation:rise .45s ease both;transition:border-color .15s,transform .15s}
+  .hook:hover{border-color:rgba(94,234,212,.45);transform:translateY(-1px)}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .bar{height:6px;border-radius:3px;background:rgba(255,255,255,.08);margin-top:10px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--acc),var(--acc2));animation:fill .7s ease both}
+  @keyframes fill{from{width:0}}
+  h1 em{background-size:200% 100%;animation:shine 4s linear infinite}
+  @keyframes shine{to{background-position:200% 0}}
+  .card{transition:border-color .2s}
+  .card:hover{border-color:rgba(148,178,255,.32)}
   .hook p{font-size:16.5px;font-weight:650;line-height:1.4}
   .meta{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
   .score{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px}
@@ -89,6 +98,8 @@
         <option value="food">Food</option>
         <option value="study">Study & Productivity</option>
         <option value="beauty">Beauty & Style</option>
+        <option value="gaming">Gaming</option>
+        <option value="travel">Travel</option>
       </select>
       <div class="row2">
         <div>
@@ -137,6 +148,7 @@
       <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn ghost" id="copyAll">Copy everything</button>
         <button class="btn ghost" id="showFavs">★ Favorites</button>
+        <button class="btn ghost" id="shareBtn">↗ Share HookForge</button>
       </div>
     </section>
   </div>
@@ -153,7 +165,9 @@ const NICHE={
   fitness:{label:"Fitness",words:["home workouts","protein","fat loss","muscle","morning routine","stretching"],tags:["#FitnessTok","#Workout","#GymTok","#HealthyHabits","#FitLife","#Training"]},
   food:{label:"Food",words:["recipes","meal prep","budget meals","kitchen hacks","desserts","snacks"],tags:["#FoodTok","#Recipe","#Cooking","#MealPrep","#Foodie","#KitchenHacks"]},
   study:{label:"Study & Productivity",words:["study techniques","focus","note-taking","exams","time management","memory"],tags:["#StudyTok","#Productivity","#StudyTips","#StudentLife","#Focus","#LearnOnTikTok"]},
-  beauty:{label:"Beauty & Style",words:["skincare","makeup","outfits","hair care","glow up","routines"],tags:["#BeautyTok","#Skincare","#Makeup","#GlowUp","#GRWM","#StyleTips"]}
+  beauty:{label:"Beauty & Style",words:["skincare","makeup","outfits","hair care","glow up","routines"],tags:["#BeautyTok","#Skincare","#Makeup","#GlowUp","#GRWM","#StyleTips"]},
+  gaming:{label:"Gaming",words:["ranked grind","aim training","speedruns","game settings","clutch moments","new updates"],tags:["#Gaming","#GamerTok","#Esports","#GameTips","#Streamer","#GG"]},
+  travel:{label:"Travel",words:["budget trips","hidden gems","packing","flight hacks","itineraries","solo travel"],tags:["#TravelTok","#Wanderlust","#TravelTips","#HiddenGems","#BudgetTravel","#TravelHacks"]}
 };
 const TEMPLATES={
   bold:[
@@ -243,7 +257,7 @@ function forge(){
   $("hooks").innerHTML=lastHooks.map((h,i)=>{
     const cls=h.score>=80?"s-hi":h.score>=60?"s-mid":"s-lo";
     const on=favs.includes(h.text)?"on":"";
-    return `<div class="hook"><p>${h.text}</p><div class="meta">
+    return `<div class="hook" style="animation-delay:${i*70}ms"><p>${h.text}</p><div class="bar"><i style="width:${h.score}%"></i></div><div class="meta">
       <span class="score ${cls}">${h.score}/100</span><span class="why">${h.why}</span>
       <button class="fav ${on}" data-fav="${i}" title="Save favorite">★</button>
       <button class="copy" data-copy="${i}">Copy</button></div></div>`;
@@ -264,14 +278,18 @@ function forge(){
     const t=lastHooks[+b.dataset.fav].text;
     favs=favs.includes(t)?favs.filter(f=>f!==t):[...favs,t];
     localStorage.setItem("hf-favs",JSON.stringify(favs));
-    b.classList.toggle("on"); renderStats();
+    b.classList.toggle("on"); $("shareBtn").onclick=async()=>{
+  const data={title:"HookForge — AI Hook & Idea Studio",text:"Forge scroll-stopping hooks with virality scores, scripts and captions. Free, no sign-up.",url:location.href};
+  try{ if(navigator.share){await navigator.share(data)} else {await navigator.clipboard.writeText(data.url); toast("Link copied!")} }catch(e){}
+};
+renderStats();
   });
   renderStats();
 }
 $("go").onclick=forge;
 $("surprise").onclick=()=>{
   const r=a=>a[Math.floor(Math.random()*a.length)];
-  $("niche").value=r(["ai","money","fitness","food","study","beauty"]);
+  $("niche").value=r(["ai","money","fitness","food","study","beauty","gaming","travel"]);
   $("tone").value=r(["bold","curious","story","teach"]);
   $("goal").value=r(["views","followers","sales","saves"]);
   $("platform").value=r(["TikTok","Instagram Reels","YouTube Shorts"]);
